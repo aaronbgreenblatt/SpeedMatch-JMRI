@@ -86,8 +86,8 @@ class SpeedMatch(jmri.jmrit.automat.AbstractAutomaton):
 
         # warm up engine
         ew = EngineWarmer(speedMatchInstance=self, throttleInstance=t)
-        #if not self.data["Load Measurements"]:
-        #    ew.warmUp(minutes=5)
+        if not self.data["Load Measurements"]:
+            ew.warmUp(minutes=5)
 
         # measure layout blocks
         p.enableSpeedTable()
