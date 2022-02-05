@@ -33,7 +33,7 @@ More details eventually coming in a PDF. In short, since there are no promises m
 Not yet implemented: With the computed speed table, we can calculate theoretical measured distances for all of the unmeasured blocks. By averaging the measured distances for each block, one can improve speed table accuracy slightly. Finally, the forward and reverse direction of travel ideally would each have a speed table. However, the NMRA CV definitions only provide one table, with a forward and backward gain setting. Therefore, we need a rank-1 approximation to a rank-2 matrix of speed table values, which is typically accomplished through a SVD. See notes below.
 
 ## Least Squares and SVD Software Notes
-This software was developed with JMRI version 4.26, which uses Jython 2.7 rather than Jython 3. Since Python / Jython 2 are EOL at the time of initial software development, I wanted to use the following libraries:
+This software was developed with JMRI version 4.26, which uses Jython 2.7.2; Jython 3 does not appear to be finalized at the time of writing. Since Python 2 is EOL at the time of initial software development, I wanted to use the following libraries:
 - numpy 1.13.3 (1.16 is the last version supporting Python 2, but PyNI only supports up to 1.13.3)
 - scipy 1.2.3 (1.2 is the last version supporting Python 2)
 
