@@ -23,6 +23,9 @@ class Program:
         else:
             self.programCv(29, 18)
 
+        if self.speedMatchInstance.data["Decoder"] == "Soundtraxx":
+            self.programCv(25, 16)
+
     def disableManufacturerSpeedTables(self):
         self.programCv(25, 0)
 

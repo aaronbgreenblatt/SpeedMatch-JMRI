@@ -77,8 +77,6 @@ class GUI:
             self.status = javax.swing.JLabel("Enter DCC Address and press Start")
 
             self.scale = javax.swing.JComboBox()
-            #self.Scale.addItem("Choose a Scale")
-            #changed default to N
             self.scale.addItem("HO Scale")
             self.scale.addItem("N Scale")
             self.scale.addItem("S Scale")
@@ -94,7 +92,8 @@ class GUI:
             #decoderList = ["ESU", "Digitrax", "TCS", "NCE", "MRC", "QSI-BLI",
             #               "SoundtraxxDSD", "Lenz Gen 5",  "Atlas/Lenz XF",
             #               "Tsunami"]
-            #self.decoderBrand = javax.swing.JComboBox(decoderList)
+            decoderList = ["Soundtraxx", "Other"]
+            self.decoder = javax.swing.JComboBox(decoderList)
 
             startButtonPanel = javax.swing.JPanel()
             startButtonPanel.add(self.startButton)
@@ -104,7 +103,7 @@ class GUI:
             f.contentPane.add(filenameSuffixPanel)
             f.contentPane.add(savePanel)
             f.contentPane.add(self.scale)
-            #f.contentPane.add(self.decoderBrand)
+            f.contentPane.add(self.decoder)
             f.contentPane.add(momentumPanel)
             f.contentPane.add(maxSmphPanel)
             f.contentPane.add(startButtonPanel)
@@ -133,6 +132,8 @@ class GUI:
 
                 self.saveMeasurementsToDisk = self.saveMeasurementsToDisk.isSelected()
                 self.loadMeasurementsFromDisk = self.loadMeasurementsFromDisk.isSelected()
+
+                self.decoder = str(self.decoder.getSelectedItem())
 
                 if self.cv3.text == '':
                     raise Exception("Invalid CV3")
@@ -171,6 +172,7 @@ class GUI:
                     "Filename Suffix" : self.filenameSuffix,
                     "Save Measurements" : self.saveMeasurementsToDisk,
                     "Load Measurements" : self.loadMeasurementsFromDisk,
+                    "Decoder" : self.decoder,
                     "Scale" : self.scale,
                     "CV3" : self.cv3,
                     "CV4" : self.cv4,
