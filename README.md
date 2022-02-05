@@ -11,6 +11,8 @@ This script monitors travel time through detection blocks to determine engine sp
 ## SMPH Setting Notes
 The scale miles per hour (SMPH) setting on the GUI is the top speed at which a calibrated engine will run. In the interest of not running locomotives as their maximum physical speed during calibration, we stop taking more data once the desired SMPH setting has been recorded. If you're unsure of the maximum SMPH that you want, try using a higher value, check the "Save" checkbox, and run your calibration. To lower the value, check the "Load" checkbox and the script will pull your old measurements from disk, saving you another calibration run of the locomotive. If one tries the reverse - an initial run at slow SMPH and recalibration at high SMPH - then a full calibration run of the locomotive should be performed to collect more data.
 
+Note that speed table CV values to actual speed tend to drift over time, due to mechanical wear on the locomotive, whether the locomotive needs to be lubricated, etc. Therefore, it may be worth re-measuring a locomotive if the last measurement was some time ago.
+
 ## Running the Script
 In JMRI, click Scripting, Run Script, and select SpeedMatch-JMRI/SpeedMatch.py.
 
