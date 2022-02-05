@@ -1,4 +1,6 @@
-# jmri_engine_speed_match
+# SpeedMatch-JMRI
+
+This is a script to calibrate model locomotive speeds using the [JMRI](https://www.jmri.org/). This script may be used on a block detected mainline, rather than requiring a separate test track with uniformly spaced blocks. Contributions and bug fixes to this code welcome - see the Unfinished Tasks section below.
 
 ## Installation Notes
 Place the `SpeedMatch-JMRI` folder inside your JMRI scripts directory. By default, on Windows, this is `C:\Users\%username$\JMRI\jython`. Note that the name of the folder - `SpeedMatch-JMRI` - is important.
