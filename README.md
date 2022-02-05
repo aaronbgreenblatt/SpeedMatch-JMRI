@@ -14,7 +14,7 @@ The scale miles per hour (SMPH) setting on the GUI is the top speed at which a c
 Note that speed table CV values to actual speed tend to drift over time, due to mechanical wear on the locomotive, whether the locomotive needs to be lubricated, etc. Therefore, it may be worth re-measuring a locomotive if the last measurement was some time ago.
 
 ## Running the Script
-In JMRI, click Scripting, Run Script, and select SpeedMatch-JMRI/SpeedMatch.py.
+In JMRI, click Scripting, Run Script, and select SpeedMatch-JMRI/SpeedMatch.py. Various script information is printed to Scripting / Script Output.
 
 Filename Suffix is optional and typically used when one has multiple units with the same DCC address - e.g. an ABBA set of F units. If the set is all on address 23, may want to have file suffixes A, B, C, and D for separate calibration on each locomotive.
 

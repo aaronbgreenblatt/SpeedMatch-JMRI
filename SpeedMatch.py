@@ -25,19 +25,24 @@ class SpeedMatch(jmri.jmrit.automat.AbstractAutomaton):
     def __init__(self):
         self.data = None
         self.gui = None
-        self.measuredBlocks = {"Measured Block Sensors" : ["LS235", "LS221", "LS254"],
-                               "Measured Block Lengths (Inches)" : [20.4375, 30.5, 13.0625]}
-        self.ignoredSensors = ["LS253", "LS264"] # faulty sensors to ignore
+        # these blocks need additional, working blocks at both the
+        # entrance and exit. The maximum speed detection in
+        # LayoutBlocks._measureBlockTime() will fail otherwise.
+        self.measuredBlocks = {"Measured Block Sensors" : ["LS235", ],
+                               "Measured Block Lengths (Inches)" : [20.4375, ]}
+        self.ignoredSensors = ["LS223", "LS225", "LS227", "LS253", "LS264"] # faulty sensors to ignore
 
         self._sensorSetup()
         return
 
     @RedirectStdErr
     def _sensorSetup(self):
-        self.completeSensorList = list(range(1,512)) # we want to watch any block,
-                                                     # but the JMRI API asks us to
-                                                     # list the block names. So
-                                                     # just list a lot of them here
+        # we want to watch any block, but the JMRI API asks us to
+        # list the block names. So just list a lot of them here. Note that
+        # each block starts a new listener thread (??), so when one lists
+        # all 4096 blocks, at least my machine - a 6 core intel i5-10500T -
+        # manages to have JMRI hang when firing up the script.
+        self.completeSensorList = list(range(1,513))
         self.completeSensorList = ["LS" + str(el) for el in self.completeSensorList]
         self.monitoredSensors = [el for el in self.completeSensorList
                                  if not el in self.ignoredSensors ]
@@ -81,8 +86,8 @@ class SpeedMatch(jmri.jmrit.automat.AbstractAutomaton):
 
         # warm up engine
         ew = EngineWarmer(speedMatchInstance=self, throttleInstance=t)
-        if not self.data["Load Measurements"]:
-            ew.warmUp(minutes=5)
+        #if not self.data["Load Measurements"]:
+        #    ew.warmUp(minutes=5)
 
         # measure layout blocks
         p.enableSpeedTable()
@@ -100,7 +105,8 @@ class SpeedMatch(jmri.jmrit.automat.AbstractAutomaton):
         p.programSpeedTable(table28Steps)
         p.programCv(cvNumber=3, cvValue=self.data["CV3"])
         p.programCv(cvNumber=4, cvValue=self.data["CV4"])
-        print("Table programming complete")
+        print("Table programming complete. Locomotive programmed to " +
+              str(self.data["Maximum Speed"]) + "SMPH")
 
         # Turn off layout power
         jmri.InstanceManager.getDefault(jmri.PowerManager).setPower(jmri.PowerManager.OFF)

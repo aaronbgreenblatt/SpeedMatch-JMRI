@@ -33,18 +33,15 @@ class LayoutBlocks:
                         + str(self.data["Filename Suffix"])
                         + ".mbt" )
 
+
     def computeMeasuredBlockTopSpeedTime(self):
         self.topSpeedTimeSecPerBlock = {}
         for i in range(len(self.data["Measured Block Sensors"])):
             sensor = self.data["Measured Block Sensors"][i]
             length_inches = self.data["Measured Block Lengths (Inches)"][i]
-
-            # in / sec = (mph * 1/scale * 1hr / 3600 sec * 5280ft / 1 mile * 12in / 1ft)
-            inchesPerSecond = (self.data["Maximum Speed"] *
-                1.0 / self.data["Scale"] *
-                1.0 / (60 * 60) *
-                5280 *
-                12)
+            smph = self.data["Maximum Speed"]
+            mph = smph * 1.0 / self.data["Scale"]
+            inchesPerSecond = 17.6 * mph
 
             # time in seconds
             # lower times are faster speeds - so stop measuring once you
@@ -140,13 +137,16 @@ class LayoutBlocks:
                 measurements[sensor].append(time)
             return
 
-        oldSensor = None
-        newTime = 0
-        while True:
-            # drive around by modifying speed table cv's
-            self.throttle.driveCv(cvValue=cvValue, forward=forward)
+        # drive around by modifying speed table cv's
+        # FYI: This adds some time delay to program the CVs,
+        # so make sure it's not in the while loop
+        self.throttle.driveCv(cvValue=cvValue, forward=forward)
 
+        newTime = 0
+        newSensor = None
+        while True:
             # wait for sensor changes and measure time
+            oldSensor = newSensor
             newSensor = self._waitForBlockSensor()
 
             # update times and add measurement
@@ -177,11 +177,18 @@ class LayoutBlocks:
                         maxSpeedFlag = True
 
                     # engine can't go fast enough - throw exception
-                    if cvValue > 252:
+                    if cvValue > 253:
                         if self.topSpeedTimeSecPerBlock[oldSensor] < timeSec:
+                            # stop the locomotive
+                            self.throttle.driveCv(cvValue=0, forward=True)
+                            print("Time this block: " + str(timeSec))
+                            print("Required time at desired SMPH: " + str(self.topSpeedTimeSecPerBlock[oldSensor]))
+                            measuredMax = ( self.data["Maximum Speed"] *
+                                            self.topSpeedTimeSecPerBlock[oldSensor] *
+                                            1.0 / timeSec )
+                            print("Measured maximum SMPH:" + str(measuredMax))
                             raise Exception("Locomotive cannot reach top speed in smph at full voltage. Try a lower smph calibration speed.")
 
-            oldSensor = newSensor
 
         if forward:
             self.timeSecPerBlockMeasurementsForward[cvValue] = measurements
@@ -195,35 +202,32 @@ class LayoutBlocks:
     """
     def _waitForBlockSensor(self):
         numChangedSensors = 0
-        oldActiveSensors = self._pollActiveSensors()
+        oldSensorStatus = self._pollActiveSensors()
 
         # JMRI fires a sensor change on either going active or non-active.
         # We only want the active ones, hence this loop.
         while numChangedSensors == 0:
             self.speedMatchInstance.waitChange(self.data["JMRI Sensors"].values())
-            newActiveSensors = self._pollActiveSensors()
+            newSensorStatus = self._pollActiveSensors()
 
             recentlyActivatedSensors = []
-            for sensor in oldActiveSensors.keys():
-                if (oldActiveSensors[sensor] == True) and (newActiveSensors[sensor] == False):
+            for sensor in oldSensorStatus.keys():
+                if (oldSensorStatus[sensor] == True) and (newSensorStatus[sensor] == False):
                     continue
-                if (oldActiveSensors[sensor] == False) and (newActiveSensors[sensor] == True):
+                if (oldSensorStatus[sensor] == False) and (newSensorStatus[sensor] == True):
                     recentlyActivatedSensors.append(sensor)
-                    #print("oldActiveSensors[sensor]: ", oldActiveSensors[sensor])
-                    #print("newActiveSensors[sensor]: ", newActiveSensors[sensor])
-            #print("numChangedSensors: ", numChangedSensors)
-            #print("recentlyActivatedSensors: ", recentlyActivatedSensors)
+
             numChangedSensors = len(recentlyActivatedSensors)
-            #print('numChangedSensors: ', numChangedSensors)
+
 
         if not numChangedSensors == 1:
-            print("oldActiveSensors: ", oldActiveSensors)
-            print("newActiveSensors: ", newActiveSensors)
+            print("oldSensorStatus: ", oldSensorStatus)
+            print("newSensorStatus: ", newSensorStatus)
             print("recentlyActivatedSensors: ", str(recentlyActivatedSensors))
             raise Exception("More than one sensor changed state. Try ignoring broken sensors. Changed blocks include: ", str(recentlyActivatedSensors))
 
+
         newSensor = recentlyActivatedSensors[0]
-        #print("newSensor: ", newSensor)
         return newSensor
 
     """
@@ -232,7 +236,7 @@ class LayoutBlocks:
     def _pollActiveSensors(self):
         activeSensors = {}
         for sensor in self.data["JMRI Sensors"].keys():
-            activeSensors[sensor] = (self.data["JMRI Sensors"][sensor].knownState == self.data["JMRI Sensor Active Const"] )
+            activeSensors[sensor] = (self.data["JMRI Sensors"][sensor].getKnownState() == self.data["JMRI Sensor Active Const"] )
         return activeSensors
 
     def _saveBlockTimes(self):
