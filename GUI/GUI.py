@@ -85,7 +85,7 @@ class GUI:
             self.scale.addItem("O Scale")
 
             self.maxSpeed = javax.swing.JTextField(3)
-            self.maxSpeed.setText("30")
+            self.maxSpeed.setText("60")
 
             maxSmphPanel = javax.swing.JPanel()
             maxSmphPanel.add(javax.swing.JLabel("Maximum Speed (smph)"))

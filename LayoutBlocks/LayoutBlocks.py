@@ -84,7 +84,7 @@ class LayoutBlocks:
 
         #cvValuesToMeasure = [16, 32, 48, 64, 80, 96, 112, 128,
         #                     144, 160, 176, 192, 208, 224, 240, 255]
-        cvValuesToMeasure = [32, 56, 80, 112, 144, 176, 208, 240, 255]
+        cvValuesToMeasure = [16, 32, 56, 80, 112, 144, 176, 208, 240, 255]
 
         self.timeSecPerBlockMeasurementsForward = {}
         self.timeSecPerBlockMeasurementsReverse = {}
