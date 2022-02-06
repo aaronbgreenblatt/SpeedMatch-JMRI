@@ -34,6 +34,7 @@ class LayoutBlocks:
                         + ".mbt" )
 
 
+
     def computeMeasuredBlockTopSpeedTime(self):
         self.topSpeedTimeSecPerBlock = {}
         for i in range(len(self.data["Measured Block Sensors"])):
@@ -79,38 +80,33 @@ class LayoutBlocks:
             self._loadBlockTimes()
             return
 
-        #cvValuesToMeasure = [16, 32, 48, 64, 80, 96, 112, 128,
-        #                     144, 160, 176, 192, 208, 224, 240, 255]
         cvValuesToMeasure = [16, 32, 56, 80, 112, 144, 176, 208, 240, 255]
 
         self.timeSecPerBlockMeasurementsForward = {}
         self.timeSecPerBlockMeasurementsReverse = {}
-        # Start with faster speeds, because you'll probably want to
-        # watch the engine as it goes flying around on your twisty, hilly
-        # mountain raiload. Maybe follow it with a net so it doesn't fall on
-        # the floor. Conversely, the slower speeds will take forever and can
-        # be unattended at lower risk.
-        #fastCvValuesToMeasure = [el for el in cvValuesToMeasure if el > 200]
-        #slowCvValuesToMeasure = [el for el in cvValuesToMeasure if el not in fastCvValuesToMeasure]
 
-        #cvValuesToMeasure need to be in ascending order for the below
-        #for forward in [True, False]:
-        #    for cvValue in fastCvValuesToMeasure:
-        #        maxSpeedFlag = self._measureBlockTime(forward, cvValue, minimumSamples)
-        #        if maxSpeedFlag:
-        #            break
+        # We're keeping track of which CV values we measure forward, and then
+        # ensuring that we measure those in reverse instead. One locomotive
+        # was slightly slower forward than backward, causing the forward
+        # loop to break at cvValue 144 whereas the reverse loop stopped at
+        # cvValue 112. This caused problems with speed table creation later.
+        measuredCvSpeedValues = []
+        # Forward
+        for cvValue in cvValuesToMeasure:
+            measuredCvSpeedValues.append(cvValue)
+            maxSpeedFlag = self._measureBlockTime(forward=True,
+                                                  cvValue=cvValue,
+                                                  minimumSamples=minimumSamples)
+            if maxSpeedFlag:
+                break
 
-        #for forward in [True, False]:
-        #    for cvValue in slowCvValuesToMeasure:
-        #        maxSpeedFlag = self._measureBlockTime(forward, cvValue, minimumSamples)
-        #        if maxSpeedFlag:
-        #            break
-
-        for forward in [True, False]:
-            for cvValue in cvValuesToMeasure:
-                maxSpeedFlag = self._measureBlockTime(forward, cvValue, minimumSamples)
-                if maxSpeedFlag:
-                    break
+        # Reverse
+        for cvValue in cvValuesToMeasure:
+            maxSpeedFlag = self._measureBlockTime(forward=False,
+                                                  cvValue=cvValue,
+                                                  minimumSamples=minimumSamples)
+            if maxSpeedFlag and (cvValue >= max(measuredCvSpeedValues)):
+                break
 
         # save the table to disk
         if self.data["Save Measurements"]:
