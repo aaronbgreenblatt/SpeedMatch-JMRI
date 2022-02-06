@@ -106,15 +106,18 @@ class SpeedTableBuilder:
 
         # if below or at minimum measurement
         if cvValueTimesTrim <= measuredCvs[0]:
-            # linearly interpolate to zero
+            # linearly interpolate below lowest speed measurement
             # TODO: Could replace lower data value with "big honking number"
             slope = ( (log(data[measuredCvs[1]]) - log(data[measuredCvs[0]])) *
                       1.0 / (measuredCvs[1] - measuredCvs[0]) )
             run = measuredCvs[0] - cvValueTimesTrim
             belowMinMeasurement = exp(log(data[measuredCvs[0]]) - slope * run)
-            #print("belowMinMeasurement")
-            #print(belowMinMeasurement)
-            return belowMinMeasurement
+            # return belowMinMeasurement
+            # Note: the above tends to result in CV values that are much
+            # too small. Instead, we're going to return (big) here and then
+            # linearly interpolate the CV values from the lowest nonchanging
+            # CV value once the final table is built later.
+            return 9999999999999999
         # if above max measurement
         elif cvValueTimesTrim > measuredCvs[-1]:
                 # linearly interpolate based on slope of top two measurements
@@ -123,8 +126,6 @@ class SpeedTableBuilder:
                           1.0 / (measuredCvs[-1] - measuredCvs[-2]) )
                 run = cvValueTimesTrim - measuredCvs[-1]
                 aboveMaxMeasurement = exp(slope * run + log(data[measuredCvs[-1]]))
-                #print("aboveMaxMeasurement")
-                #print(aboveMaxMeasurement)
                 return aboveMaxMeasurement
         else:
             # we're between two points
@@ -138,8 +139,6 @@ class SpeedTableBuilder:
                                 1.0 / (highCv - lowCv) )
                      run = cvValueTimesTrim - lowCv
                      betweenMeasurements = exp(slope * run + log(data[lowCv]))
-                     #print("betweenMeasurements")
-                     #print(betweenMeasurements)
                      return betweenMeasurements
 
     """
@@ -183,15 +182,14 @@ class SpeedTableBuilder:
         if not len(tableCvs) == 28:
             raise Exception("Not all CVs mapped.")
 
-        # fix initial zeros in the speed table. See comments above
+        # fix initial constants in the speed table. See comments above
         # about interpolation issues
-        i = 0
-        while tableCvs[i] == 0 :
-            i = i + 1
-        firstNonzeroIndex = i
-        slope = tableCvs[firstNonzeroIndex] * 1.0 / firstNonzeroIndex
-        for cv in range(0,firstNonzeroIndex):
-            tableCvs[cv] = int(round(slope * cv))
+        for i in range(28):
+            if not tableCvs[i] == tableCvs[0]:
+                break
+        slope = tableCvs[i] * 1.0 / (i + 1)
+        for cv in range(0,i):
+            tableCvs[cv] = int(round(slope * (cv + 1)))
 
         return tableCvs
 
