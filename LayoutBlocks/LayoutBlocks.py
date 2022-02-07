@@ -168,6 +168,14 @@ class LayoutBlocks:
 
                 # only if this is a measured block - check speed constraints
                 if oldSensor in self.topSpeedTimeSecPerBlock.keys():
+                    # print out the current speed
+                    measuredSpeed = ( self.data["Maximum Speed"] *
+                                    self.topSpeedTimeSecPerBlock[oldSensor] *
+                                    1.0 / timeSec )
+                    print("Speed-" + dirString + " " + str(cvValue) +
+                          ". Sensor: " + str(oldSensor) + ". " +
+                          "Current measured speed: " + str(measuredSpeed) + " smph.")
+
                     # fast enough - stop checking higher speeds
                     if self.topSpeedTimeSecPerBlock[oldSensor] > timeSec:
                         maxSpeedFlag = True
@@ -179,10 +187,7 @@ class LayoutBlocks:
                             self.throttle.driveCv(cvValue=0, forward=True)
                             print("Time this block: " + str(timeSec))
                             print("Required time at desired SMPH: " + str(self.topSpeedTimeSecPerBlock[oldSensor]))
-                            measuredMax = ( self.data["Maximum Speed"] *
-                                            self.topSpeedTimeSecPerBlock[oldSensor] *
-                                            1.0 / timeSec )
-                            print("Measured maximum SMPH:" + str(measuredMax))
+                            print("Measured maximum SMPH:" + str(measuredSpeed))
                             raise Exception("Locomotive cannot reach top speed in smph at full voltage. Try a lower smph calibration speed.")
 
 

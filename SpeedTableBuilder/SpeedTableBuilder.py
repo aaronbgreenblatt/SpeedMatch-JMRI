@@ -61,15 +61,25 @@ class SpeedTableBuilder:
             for cv in forwardMeasurements.keys():
                 forwardMedianBlockTime = median(forwardMeasurements[cv][sensor])
                 reverseMedianBlockTime = median(reverseMeasurements[cv][sensor])
+                forwardTimes[cv] = forwardMedianBlockTime
+                reverseTimes[cv] = reverseMedianBlockTime
+                # Note: On some brass steam engines, especially at lower
+                # speeds, you can really get a factor of 2 difference between
+                # forward and reverse directions at the same speed table CV
+                # value. Therefore, the check below has been disabled for now,
+                # and comments have been added to README.md on finding a better
+                # way of handling this plus computations for the forward and
+                # reverse trim values.
+                #
                 # if times are sort of close
-                if ( (forwardMedianBlockTime / reverseMedianBlockTime < 1.25) and
-                     (forwardMedianBlockTime / reverseMedianBlockTime > 0.75) ):
-                    forwardTimes[cv] = forwardMedianBlockTime
-                    reverseTimes[cv] = reverseMedianBlockTime
-                else:
-                    # throw out this block
-                    saveFlag = False
-                    break
+                #if ( (forwardMedianBlockTime / reverseMedianBlockTime < 1.25) and
+                #     (forwardMedianBlockTime / reverseMedianBlockTime > 0.75) ):
+                #    forwardTimes[cv] = forwardMedianBlockTime
+                #    reverseTimes[cv] = reverseMedianBlockTime
+                #else:
+                #    # throw out this block
+                #    saveFlag = False
+                #    break
 
             if saveFlag:
                 self.processedMeasurementsForward[sensor] = forwardTimes

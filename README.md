@@ -18,7 +18,9 @@ In JMRI, click Scripting, Run Script, and select SpeedMatch-JMRI/SpeedMatch.py. 
 
 Filename Suffix is optional and typically used when one has multiple units with the same DCC address - e.g. an ABBA set of F units. If the set is all on address 23, may want to have file suffixes A, B, C, and D for separate calibration on each locomotive.
 
-On the author's home railroad, where the mainline is approximately an 80-foot loop of track, data collection for one locomotive can take 2-3 hours, depending on top SMPH speed requested.
+On the author's home railroad, where the mainline is approximately an 80-foot loop of track, data collection for one locomotive can take 1-3 hours, depending on top SMPH speed requested.
+
+If one has a locomotive that, for example, one wants to calibrate to 60 smph, but the locomotive only can run at 54 smph, one approach is to calibrate the locomotive to 52 smph and save the calibration data to disk (using the GUI checkbox). Then re-run the program, check load data from the GUI, and set the desired 60 smph. This avoids the maximum speed check. Obviously the locomotive will not run at 60 smph, but it should match the speed of other locomotives calibrated to 60 smph at lower speed steps.
 
 ## TODO: Unfinished tasks
 - PDF describing method of operation
@@ -26,6 +28,8 @@ On the author's home railroad, where the mainline is approximately an 80-foot lo
 - Integration with JMRI roster entries
 - Unit testing
 - Momentum CV normalization across different DCC decoder vendors
+- In preprocessCvToBlockTimeDataTables() in SpeedTableBuilder.py, the block length check has been disabled - it's based on the forward and reverse block times being similar. It turns out that some brass steam engines actually have significantly different forward and reverse speeds at certain motor voltage levels, so another method for checking for missing neighboring blocks should be devised.
+- Related to the above, the SVD computation of forward and reverse trims should really be implemented somehow, or at least an approximation to this. For example, take the average of the forward and reverse tables, then compute forward / reverse gains that minimize the squared error between the compute tables and new (measured * gain) tables.
 
 ## Method of Operation
 More details eventually coming in a PDF. In short, since there are no promises made about how throttle steps map to speed table settings, nor how speed table settings map to the actual locomotive speed, what we do is take a speed table CV and gradually increase it, measuring block travel times in the process. From here, we use the measured block to compute a speed table.
