@@ -188,8 +188,13 @@ class SpeedTableBuilder:
                     else:
                          tableCvs.append(cvValueTimesTrim - 1)
                     break
+                elif cvValueTimesTrim == 255:
+                    # we're at the top speed step, but still not moving
+                    # quickly enough to hit the desiredTime target.
+                    tableCvs.append(255)
 
         if not len(tableCvs) == 28:
+            print("tableCvs: " + str(tableCvs))
             raise Exception("Not all CVs mapped.")
 
         # fix initial constants in the speed table. See comments above

@@ -18,9 +18,7 @@ In JMRI, click Scripting, Run Script, and select SpeedMatch-JMRI/SpeedMatch.py. 
 
 Filename Suffix is optional and typically used when one has multiple units with the same DCC address - e.g. an ABBA set of F units. If the set is all on address 23, may want to have file suffixes A, B, C, and D for separate calibration on each locomotive.
 
-On the author's home railroad, where the mainline is approximately an 80-foot loop of track, data collection for one locomotive can take 1-3 hours, depending on top SMPH speed requested.
-
-If one has a locomotive that, for example, one wants to calibrate to 60 smph, but the locomotive only can run at 54 smph, one approach is to calibrate the locomotive to 52 smph and save the calibration data to disk (using the GUI checkbox). Then re-run the program, check load data from the GUI, and set the desired 60 smph. This avoids the maximum speed check. Obviously the locomotive will not run at 60 smph, but it should match the speed of other locomotives calibrated to 60 smph at lower speed steps.
+On the author's home railroad, where the mainline is approximately an 80-foot loop of track, data collection for one locomotive can take 0.5-7 hours, depending on top SMPH speed requested and the characteristics of the locomotive. (The 7 hour locomotive is a geared logging engine with a top speed of 14 smph.)
 
 ## TODO: Unfinished tasks
 - PDF describing method of operation

@@ -85,15 +85,10 @@ class LayoutBlocks:
         self.timeSecPerBlockMeasurementsForward = {}
         self.timeSecPerBlockMeasurementsReverse = {}
 
-        # We're keeping track of which CV values we measure forward, and then
-        # ensuring that we measure those in reverse instead. One locomotive
-        # was slightly slower forward than backward, causing the forward
-        # loop to break at cvValue 144 whereas the reverse loop stopped at
-        # cvValue 112. This caused problems with speed table creation later.
-        measuredCvSpeedValues = []
         # Forward
+        measuredCvSpeedValuesForward = []
         for cvValue in cvValuesToMeasure:
-            measuredCvSpeedValues.append(cvValue)
+            measuredCvSpeedValuesForward.append(cvValue)
             maxSpeedFlag = self._measureBlockTime(forward=True,
                                                   cvValue=cvValue,
                                                   minimumSamples=minimumSamples)
@@ -101,12 +96,35 @@ class LayoutBlocks:
                 break
 
         # Reverse
+        measuredCvSpeedValuesReverse = []
         for cvValue in cvValuesToMeasure:
+            measuredCvSpeedValuesReverse.append(cvValue)
             maxSpeedFlag = self._measureBlockTime(forward=False,
                                                   cvValue=cvValue,
                                                   minimumSamples=minimumSamples)
-            if maxSpeedFlag and (cvValue >= max(measuredCvSpeedValues)):
+            if maxSpeedFlag:
                 break
+
+        # Either forward or reverse might be missing some CVs, if the
+        # maxSpeedFlag breaks at different measurement CVs (which is common).
+        # Let's populate anything that's missing. Having the same set of
+        # CV measurement values is important for table creation later.
+        missingForward = [el for el in measuredCvSpeedValuesReverse
+                          if el not in measuredCvSpeedValuesForward]
+        for cvValue in missingForward:
+            self._measureBlockTime(forward=True,
+                                   cvValue=cvValue,
+                                   minimumSamples=minimumSamples)
+
+        missingReverse = [el for el in measuredCvSpeedValuesForward
+                          if el not in measuredCvSpeedValuesReverse]
+        for cvValue in missingReverse:
+            self._measureBlockTime(forward=False,
+                                   cvValue=cvValue,
+                                   minimumSamples=minimumSamples)
+
+
+
 
         # save the table to disk
         if self.data["Save Measurements"]:
@@ -181,14 +199,19 @@ class LayoutBlocks:
                         maxSpeedFlag = True
 
                     # engine can't go fast enough - throw exception
+                    # Note: quite often, an engine goes almost fast enough,
+                    # at which point we want to keep the calibration speed
+                    # and let the CV value "clip" at 255 towards the top
+                    # of the table. Therefore, this is a warning, not an
+                    # exception.
                     if cvValue > 253:
                         if self.topSpeedTimeSecPerBlock[oldSensor] < timeSec:
-                            # stop the locomotive
-                            self.throttle.driveCv(cvValue=0, forward=True)
                             print("Time this block: " + str(timeSec))
                             print("Required time at desired SMPH: " + str(self.topSpeedTimeSecPerBlock[oldSensor]))
-                            print("Measured maximum SMPH:" + str(measuredSpeed))
-                            raise Exception("Locomotive cannot reach top speed in smph at full voltage. Try a lower smph calibration speed.")
+                            print("WARNING: Measured maximum SMPH:" + str(measuredSpeed))
+                            # stop the locomotive
+                            #self.throttle.driveCv(cvValue=0, forward=True)
+                            #raise Exception("Locomotive cannot reach top speed in smph at full voltage. Try a lower smph calibration speed.")
 
 
         if forward:

@@ -21,24 +21,24 @@ class EngineWarmer:
         self.speedMatchInstance.waitMsec(1000)
 
         # forward
-        self._whistle(2)
+        #self._whistle(2)
         t.setIsForward(True)
         t.speedSetting = 0.5
         self.speedMatchInstance.waitMsec(int(minutes * 60 * 1000 / 2))
 
         # stop
-        self._whistle(1)
+        #self._whistle(1)
         t.speedSetting = 0.0
         self.speedMatchInstance.waitMsec(2000)
 
         # reverse
-        self._whistle(3)
+        #self._whistle(3)
         t.setIsForward(False)
         t.speedSetting = 0.5
         self.speedMatchInstance.waitMsec(int(minutes * 60 * 1000 / 2))
 
         # stop
-        self._whistle(1)
+        #self._whistle(1)
         t.speedSetting = 0.0
         self.speedMatchInstance.waitMsec(2000)
 
