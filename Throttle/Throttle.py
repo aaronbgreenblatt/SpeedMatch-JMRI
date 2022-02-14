@@ -78,10 +78,13 @@ class Throttle:
         else:
             # set steps around the target bececause decoders interpolate
             # these values and our throttle setting might not be exactly
-            # on the dot to avoid interpolation
-            for step in [speedTableStep-1, speedTableStep, speedTableStep+1]:
+            # on the dot to avoid interpolation. Digitrax DH165 appears to
+            # interpolate with at least 5 steps, so we program 9 steps here.
+            for step in range(speedTableStep-4, speedTableStep+5):
                 if (step > 0) and (step <=28):
                     p.programCv(cvNumber = 66 + step, cvValue = cvValue)
             self.getActiveJmriThrottle().setIsForward(forward)
             self.getActiveJmriThrottle().speedSetting = speedTableStep * 1.0/28
+            # give the new CVs time to update locomotive speed
+            self.speedMatchInstance.waitMsec(2000)
         return

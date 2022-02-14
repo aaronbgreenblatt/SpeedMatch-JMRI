@@ -80,7 +80,12 @@ class LayoutBlocks:
             self._loadBlockTimes()
             return
 
-        cvValuesToMeasure = [16, 32, 56, 80, 112, 144, 176, 208, 240, 255]
+        unscaledCvValuesToMeasure = [16, 32, 56, 80, 112, 144, 176, 208, 240, 255]
+        # account for vStart
+        vStart = int(self.data["vStart"])
+        cvValuesToMeasure = [vStart + int( el * (255 - vStart) / 255.0 )
+                             for el in unscaledCvValuesToMeasure]
+        print("Measuring table cv speed settings: " + str(cvValuesToMeasure))
 
         self.timeSecPerBlockMeasurementsForward = {}
         self.timeSecPerBlockMeasurementsReverse = {}

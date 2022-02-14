@@ -18,6 +18,8 @@ In JMRI, click Scripting, Run Script, and select SpeedMatch-JMRI/SpeedMatch.py. 
 
 Filename Suffix is optional and typically used when one has multiple units with the same DCC address - e.g. an ABBA set of F units. If the set is all on address 23, may want to have file suffixes A, B, C, and D for separate calibration on each locomotive.
 
+vStart is typically zero for locomotives that employ modern BEMF circuits. For locomotives without BEMF, or if one desires BEMF to be disabled, enter the desired vStart setting here.
+
 On the author's home railroad, where the mainline is approximately an 80-foot loop of track, data collection for one locomotive can take 0.5-7 hours, depending on top SMPH speed requested and the characteristics of the locomotive. (The 7 hour locomotive is a geared logging engine with a top speed of 14 smph.)
 
 ## TODO: Unfinished tasks

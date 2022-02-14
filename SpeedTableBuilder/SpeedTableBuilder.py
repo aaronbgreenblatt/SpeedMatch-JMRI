@@ -199,10 +199,11 @@ class SpeedTableBuilder:
 
         # fix initial constants in the speed table. See comments above
         # about interpolation issues
+        vStart = int(self.layoutBlocksInstance.data["vStart"])
         for i in range(28):
             if not tableCvs[i] == tableCvs[0]:
                 break
-        slope = tableCvs[i] * 1.0 / (i + 1)
+        slope = (tableCvs[i] - vStart) * 1.0 / (i + 1)
         for cv in range(0,i):
             tableCvs[cv] = int(round(slope * (cv + 1)))
 

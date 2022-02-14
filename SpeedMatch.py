@@ -81,6 +81,7 @@ class SpeedMatch(jmri.jmrit.automat.AbstractAutomaton):
         # set momentum CVs to 1 for measurements
         p.programCv(cvNumber=3, cvValue=1)
         p.programCv(cvNumber=4, cvValue=1)
+        p.programCv(cvNumber=2, cvValue=int(self.data["vStart"]))
         p.disableTrim()
         p.disableManufacturerSpeedTables()
 

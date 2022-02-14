@@ -60,15 +60,22 @@ class GUI:
             self.cv3 = javax.swing.JTextField(3)    # sized to hold 3 characters, initially empty
             self.cv4 = javax.swing.JTextField(3)    # sized to hold 3 characters, initially empty
 
-            # put the text field on a line preceded by a label
             momentumPanel = javax.swing.JPanel()
             momentumPanel.add(javax.swing.JLabel("  cv3 "))
             momentumPanel.add(self.cv3)
             momentumPanel.add(javax.swing.JLabel("  cv4 "))
             momentumPanel.add(self.cv4)
-
             self.cv3.setText("5")
             self.cv4.setText("5")
+
+            # vstart, which will correspond to the first step
+            # in our 28 step table later (i.e. not cv2)
+            self.vStart = javax.swing.JTextField(3)
+            vStartPanel = javax.swing.JPanel()
+            vStartPanel.add(javax.swing.JLabel("  vStart (for non-BEMF locos)"))
+            vStartPanel.add(self.vStart)
+
+            self.vStart.setText("0")
 
             # create the start button
             self.startButton = javax.swing.JButton("Start")
@@ -105,6 +112,7 @@ class GUI:
             f.contentPane.add(self.scale)
             f.contentPane.add(self.decoder)
             f.contentPane.add(momentumPanel)
+            f.contentPane.add(vStartPanel)
             f.contentPane.add(maxSmphPanel)
             f.contentPane.add(startButtonPanel)
             f.contentPane.add(self.status)
@@ -143,6 +151,10 @@ class GUI:
                     raise Exception("Invalid CV4")
                 self.cv4 = int(self.cv4.text)
 
+                if self.vStart.text == '':
+                    raise Exception("Invalid vStart")
+                self.vStart = int(self.vStart.text)
+
                 if self.maxSpeed.text == '':
                     raise Exception("Invalid Max Speed")
                 self.maxSpeed = int(self.maxSpeed.text)
@@ -176,6 +188,7 @@ class GUI:
                     "Scale" : self.scale,
                     "CV3" : self.cv3,
                     "CV4" : self.cv4,
+                    "vStart" : self.vStart,
                     "Maximum Speed" : self.maxSpeed}
 
         @RedirectStdErr
